@@ -1,0 +1,19 @@
+{
+  "name": "osa3uusiyritys",
+  "version": "1.0.0",
+  "description": "Osa 3 tekeminen aloitettu uudestaan tauon jälkeen 8.8.2024 muistin virkistämiseksi ennen vaikeampiin tehtäviin siirtymistä.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node index.js",
+    "dev": "nodemon index.js"
+  },
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "nodemon": "^3.1.4"
+  },
+  "dependencies": {
+    "express": "^4.19.2"
+  }
+}
