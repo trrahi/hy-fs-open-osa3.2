@@ -1,0 +1,7 @@
+POST https://hy-fs-open-osa3uusiyritys.onrender.com/api/persons
+Content-Type: application/json
+
+{
+    "name": "Erika Kaarlaakso",
+    "number": "040 761 5147"
+}

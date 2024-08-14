@@ -9,6 +9,7 @@ app.use(express.json());
 app.use(
   morgan(":method :url :status :response-time ms :postRequestContent ✨ ✨ ✨ ✨ ✨ ✨ ✨ ✨ ✨ ✨ ✨ ✨ ✨ ✨ ✨ ✨")
 );
+app.use(express.static("dist"))
 
 // Kustomoitu Morgan tokeni, joka palauttaa POST-pyyntöjen body contentin
 morgan.token("postRequestContent", (req, res) => {
@@ -109,7 +110,7 @@ app.delete("/api/persons/:id", (req, res) => {
     });
   // Muussa tapauksessa lähetään onnistumisesta kertova statuskoodi ja päätetään pyyntö
   } else {
-    console.log("backend, else happened");
+    // console.log("backend, else happened");
     res.status(200).end();
   }
   // Päivitetään luettelo vastaamaan henkilön poiston mukaista luetteloa
