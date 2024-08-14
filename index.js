@@ -6,7 +6,9 @@ const cors = require("cors")
 // MIDDLEWARET
 app.use(cors())
 app.use(express.json());
-app.use(morgan(":method :url :status :postRequestContent :eyes"));
+app.use(
+  morgan(":method :url :status :response-time ms :postRequestContent ✨ ✨ ✨ ✨ ✨ ✨ ✨ ✨ ✨ ✨ ✨ ✨ ✨ ✨ ✨ ✨")
+);
 
 // Kustomoitu Morgan tokeni, joka palauttaa POST-pyyntöjen body contentin
 morgan.token("postRequestContent", (req, res) => {
@@ -15,12 +17,6 @@ morgan.token("postRequestContent", (req, res) => {
     return JSON.stringify(thing);
   }
 });
-
-morgan.token("eyes", (req, res) => {
-    return "✨ ✨ ✨ ✨ ✨ ✨ ✨ ✨ ✨ ✨ ✨ ✨ ✨ ✨ ✨ ✨ ";
-  }
-);
-
 
 
 
@@ -189,7 +185,7 @@ const unknownEndpoint = (request, response) => {
 app.use(unknownEndpoint);
 
 // Käynnistetään palvelin. ENV-muuttuja on Renderiä varten, jotta se voi avata haluamsa portin. Jos Renderin valitsema portti ei ole käytössä, käytetään porttia 3001
-const PORT = 3001;
+const PORT = process.env.PORT || 3001;
 app.listen(PORT);
 // console.log(`servu käynnis portis ${PORT}`);
 
