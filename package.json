@@ -6,7 +6,11 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "node index.js",
-    "dev": "nodemon index.js"
+    "dev": "nodemon index.js",
+    "build:ui": "rm -rf dist && cd ../hy-fs-open/osa2/puhelinluettelo && npm run build && cp -r dist ../../../osa3uusiyritys",
+    "deploy:full": "npm run build:ui && git add . && git commit -m uibuild && git push",
+
+    "testi": "cd ../hy-fs-open/osa2/puhelinluettelo && touch thing.txt && cp thing.txt ../../../osa3uusiyritys"
   },
   "author": "",
   "license": "ISC",
