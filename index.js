@@ -118,9 +118,8 @@ app.delete("/api/persons/:id", (req, res, next) => {
 
 
 // POST uusi kontakti
-app.post("/api/persons", (req, res) => {
+app.post("/api/persons", (req, res, next) => {
   let reqBody = req.body;
-  if (reqBody.name && reqBody.number) {
     const newContact = new Contact({
       name: reqBody.name,
       number: reqBody.number
@@ -136,12 +135,7 @@ app.post("/api/persons", (req, res) => {
     })
     .catch(error => next(error))
 
-  } else {
-    res.status(400).json({
-      error: "Pitää ilmoittaa sekä lisättävän kontaktin nimi, että numero.",
-    });
-  }
-});
+})
 
 
 
@@ -176,13 +170,16 @@ const unknownEndpoint = (request, response) => {
 app.use(unknownEndpoint);
 
 // Virheiden käsittely middleware
-const errorHandler = (error, request, response, next) => {
+const errorHandler = (error, req, res, next) => {
   console.error(error.message);
 
   if (error.name === "CastError") {
-    return response
+    return res
       .status(400)
       .send({ error: "Väärä ID virheidenkäsittelijässä 🛑" });
+  } else if (error.name === "ValidationError") {
+    console.log("shit");
+    return res.status(400).json({error: error.message})
   }
   next(err);
 };

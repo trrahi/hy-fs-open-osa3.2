@@ -14,8 +14,19 @@ mongoose.connect(url)
 
 // Luodaan koodin sisäinen skeema 
 const personSchema = new mongoose.Schema({
-  name: String,
-  number: String,
+  name: {
+    type: String,
+    minlength: 3,
+    required: true
+  },
+  number: {
+    type: String,
+    validate: {
+      validator: v => /\d{2}-\d{6}/.test(v),
+      message: thing => `${thing.value} ei ole käypä puhelinnumero!`
+    },
+    required: true
+  }
 });
 
 // Määritellään palautettavien asioiden muoto
