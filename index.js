@@ -31,37 +31,6 @@ morgan.token('postRequestContent', (req) => {
 
 
 
-
-// // Puhelinluettelon alkutila
-// let phonebook = [
-//       {
-//         id: "1",
-//         name: "Arto Hellas",
-//         number: "666 666 666 6666",
-//       },
-//       {
-//         id: "2",
-//         name: "Ada Lovelace",
-//         number: "39-44-5323523",
-//       },
-//       {
-//         id: "3",
-//         name: "Dan Abramov",
-//         number: "12-43-234345",
-//       },
-//       {
-//         id: "4",
-//         name: "Mary Poppendick",
-//         number: "020202",
-//       },
-// ]
-
-
-
-
-
-
-
 // REITIT PYYNNÖILLE
 // JUURI ja INFO routet
 app.get('/', (req, res) => {
@@ -69,9 +38,11 @@ app.get('/', (req, res) => {
 })
 
 app.get('/info', (req, res) => {
-  let info = `Phonebook has info for FXI THIS people`
-  let date = new Date().toString()
-  res.send(info + '<br>' + date)
+  Contact.find({}).then((result) => {
+      let info = `Phonebook has info for ${result.length} people`;
+      let date = new Date().toString();
+      res.send(info + "<br>" + date);
+  })
 })
 
 
