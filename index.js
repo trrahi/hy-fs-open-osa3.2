@@ -1,11 +1,11 @@
 // Otetaan ulkoiset kirjastot ja funktiot käyttöön
-const express = require("express");
-const app = express();
-const morgan = require("morgan");
-const cors = require("cors")
-require("dotenv").config()
+const express = require('express')
+const app = express()
+const morgan = require('morgan')
+const cors = require('cors')
+require('dotenv').config()
 // Importit
-const Contact = require("./models/contact")
+const Contact = require('./models/contact')
 
 
 
@@ -13,19 +13,19 @@ const Contact = require("./models/contact")
 
 // MIDDLEWARET
 app.use(cors())
-app.use(express.json());
+app.use(express.json())
 app.use(
-  morgan(":method :url :status :response-time ms :postRequestContent ✨ ✨ ✨ ✨ ✨ ✨ ✨ ✨ ✨ ✨ ✨ ✨ ✨ ✨ ✨ ✨")
-);
-app.use(express.static("dist"))
+  morgan(':method :url :status :response-time ms :postRequestContent ✨ ✨ ✨ ✨ ✨ ✨ ✨ ✨ ✨ ✨ ✨ ✨ ✨ ✨ ✨ ✨')
+)
+app.use(express.static('dist'))
 
 // Kustomoitu Morgan tokeni, joka palauttaa POST-pyyntöjen body contentin
-morgan.token("postRequestContent", (req, res) => {
-  if (req.method == "POST") {
-    let thing = req.body;
-    return JSON.stringify(thing);
+morgan.token('postRequestContent', (req) => {
+  if (req.method === 'POST') {
+    let thing = req.body
+    return JSON.stringify(thing)
   }
-});
+})
 
 
 
@@ -64,53 +64,53 @@ morgan.token("postRequestContent", (req, res) => {
 
 // REITIT PYYNNÖILLE
 // JUURI ja INFO routet
-app.get("/", (req, res) => {
-  res.send("Olet juuressa");
-});
+app.get('/', (req, res) => {
+  res.send('Olet juuressa')
+})
 
-app.get("/info", (req, res) => {
-  let info = `Phonebook has info for ${phonebook.length} people`;
-  let date = new Date().toString();
-  res.send(info + "<br>" + date);
-});
+app.get('/info', (req, res) => {
+  let info = `Phonebook has info for FXI THIS people`
+  let date = new Date().toString()
+  res.send(info + '<br>' + date)
+})
 
 
 
 // GET phonebookin sisältö kokonaan
-app.get("/api/persons", (req, res) => {
+app.get('/api/persons', (req, res, next) => {
   Contact.find({}).then(contacts => {
     res.json(contacts)
   })
-  .catch(error => next(error))
-});
+    .catch(error => next(error))
+})
 
 // GET tietty kontakti phonebookista
-app.get("/api/persons/:id", (req, res, next) => {
-  const id = req.params.id;
+app.get('/api/persons/:id', (req, res, next) => {
+  const id = req.params.id
   Contact.findById(id)
-  .then(contact => {
-    if (contact) {
-      res.json(contact)
-    } else {
-      res.status(404).end()
-    }
-  })
-  .catch(error => next(error))
-});
+    .then(contact => {
+      if (contact) {
+        res.json(contact)
+      } else {
+        res.status(404).end()
+      }
+    })
+    .catch(error => next(error))
+})
 
 
 
 
 
 // DELETE kontakti
-app.delete("/api/persons/:id", (req, res, next) => {
-  const id = req.params.id;
+app.delete('/api/persons/:id', (req, res, next) => {
+  const id = req.params.id
   Contact.findByIdAndDelete(id)
-  .then(()=> {
-    res.status(204).end()
-  })
-  .catch(error => next(error))
-  });
+    .then(() => {
+      res.status(204).end()
+    })
+    .catch(error => next(error))
+})
 
 
 
@@ -118,21 +118,21 @@ app.delete("/api/persons/:id", (req, res, next) => {
 
 
 // POST uusi kontakti
-app.post("/api/persons", (req, res, next) => {
-  let reqBody = req.body;
-    const newContact = new Contact({
-      name: reqBody.name,
-      number: reqBody.number
-    })
-    newContact.save().then(addedContact =>{
-      res.json(addedContact)
+app.post('/api/persons', (req, res, next) => {
+  let reqBody = req.body
+  const newContact = new Contact({
+    name: reqBody.name,
+    number: reqBody.number
+  })
+  newContact.save().then(addedContact => {
+    res.json(addedContact)
 
-      // Pidempi tapa jossa palautetaan koko puhelinluettelo
-      // Contact.find({}).then(returnedContacts => {
-      //   console.log("returnedContacts: ", returnedContacts);
-      //   res.json(returnedContacts)
-      // })
-    })
+    // Pidempi tapa jossa palautetaan koko puhelinluettelo
+    // Contact.find({}).then(returnedContacts => {
+    //   console.log("returnedContacts: ", returnedContacts);
+    //   res.json(returnedContacts)
+    // })
+  })
     .catch(error => next(error))
 
 })
@@ -140,7 +140,7 @@ app.post("/api/persons", (req, res, next) => {
 
 
 // PUT päivitä kontaktin tiedot
-app.put("/api/persons/:id", (req, res, next) => {
+app.put('/api/persons/:id', (req, res, next) => {
   const id = req.params.id
   const body = req.body
 
@@ -149,11 +149,11 @@ app.put("/api/persons/:id", (req, res, next) => {
     number: body.number
   }
 
-  Contact.findByIdAndUpdate(id, updated, {new: true, runValidators: true, context: "query"})
-  .then(updatedContact => {
-    res.json(updatedContact)
-  })
-  .catch(error => next(error))
+  Contact.findByIdAndUpdate(id, updated, { new: true, runValidators: true, context: 'query' })
+    .then(updatedContact => {
+      res.json(updatedContact)
+    })
+    .catch(error => next(error))
 })
 
 
@@ -164,33 +164,33 @@ app.put("/api/persons/:id", (req, res, next) => {
 const unknownEndpoint = (request, response) => {
   response.status(404).send({
     error:
-      "meow, this is an unknown endpoint. but what do i know, im just a smol cat",
-  });
-};
-app.use(unknownEndpoint);
+      'meow, this is an unknown endpoint. but what do i know, im just a smol cat',
+  })
+}
+app.use(unknownEndpoint)
 
 // Virheiden käsittely middleware
 const errorHandler = (error, req, res, next) => {
-  console.error(error.message);
+  console.error(error.message)
 
-  if (error.name === "CastError") {
+  if (error.name === 'CastError') {
     return res
       .status(400)
-      .send({ error: "Väärä ID virheidenkäsittelijässä 🛑" });
-  } else if (error.name === "ValidationError") {
-    console.log("shit");
-    return res.status(400).json({error: error.message})
+      .send({ error: 'Väärä ID virheidenkäsittelijässä 🛑' })
+  } else if (error.name === 'ValidationError') {
+    console.log('shit')
+    return res.status(400).json({ error: error.message })
   }
-  next(err);
-};
-app.use(errorHandler);
+  next(error)
+}
+app.use(errorHandler)
 
 
 
 // Käynnistetään palvelin.
 const PORT = process.env.PORT
-app.listen(PORT);
-console.log(`Servu käynnis portis ${PORT} 🚢`);
+app.listen(PORT)
+console.log(`Servu käynnis portis ${PORT} 🚢`)
 
 
 
@@ -203,7 +203,7 @@ console.log(`Servu käynnis portis ${PORT} 🚢`);
 
 
 
-// OLD CODE OLD CODE OLD CODE OLD CODE OLD CODE OLD CODE OLD CODE OLD CODE 
+// OLD CODE OLD CODE OLD CODE OLD CODE OLD CODE OLD CODE OLD CODE OLD CODE
 
 // const requestLogger = (request, response, next) => {
 //   console.log("Method:", request.method);

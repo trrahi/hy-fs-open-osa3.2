@@ -9,11 +9,16 @@
     "dev": "nodemon index.js",
     "build:ui": "rm -rf dist && cd ../hy-fs-open/osa2/puhelinluettelo && npm run build && cp -r dist ../../../osa3uusiyritys",
     "deploy:full": "npm run build:ui && git add . && git commit -m uibuild && git push",
-    "testi": "cd ../hy-fs-open/osa2/puhelinluettelo && touch thing.txt && cp thing.txt ../../../osa3uusiyritys"
+    "testi": "cd ../hy-fs-open/osa2/puhelinluettelo && touch thing.txt && cp thing.txt ../../../osa3uusiyritys",
+    "lint": "eslint ."
   },
   "author": "",
   "license": "ISC",
   "devDependencies": {
+    "@eslint/js": "^9.9.0",
+    "@stylistic/eslint-plugin-js": "^2.6.4",
+    "eslint": "^9.9.0",
+    "globals": "^15.9.0",
     "nodemon": "^3.1.4"
   },
   "dependencies": {
