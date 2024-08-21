@@ -32,29 +32,29 @@ morgan.token("postRequestContent", (req, res) => {
 
 
 
-// Puhelinluettelon alkutila
-let phonebook = [
-      {
-        id: "1",
-        name: "Arto Hellas",
-        number: "666 666 666 6666",
-      },
-      {
-        id: "2",
-        name: "Ada Lovelace",
-        number: "39-44-5323523",
-      },
-      {
-        id: "3",
-        name: "Dan Abramov",
-        number: "12-43-234345",
-      },
-      {
-        id: "4",
-        name: "Mary Poppendick",
-        number: "020202",
-      },
-]
+// // Puhelinluettelon alkutila
+// let phonebook = [
+//       {
+//         id: "1",
+//         name: "Arto Hellas",
+//         number: "666 666 666 6666",
+//       },
+//       {
+//         id: "2",
+//         name: "Ada Lovelace",
+//         number: "39-44-5323523",
+//       },
+//       {
+//         id: "3",
+//         name: "Dan Abramov",
+//         number: "12-43-234345",
+//       },
+//       {
+//         id: "4",
+//         name: "Mary Poppendick",
+//         number: "020202",
+//       },
+// ]
 
 
 
@@ -63,31 +63,39 @@ let phonebook = [
 
 
 // REITIT PYYNNÖILLE
+// JUURI ja INFO routet
 app.get("/", (req, res) => {
   res.send("Olet juuressa");
 });
 
+app.get("/info", (req, res) => {
+  let info = `Phonebook has info for ${phonebook.length} people`;
+  let date = new Date().toString();
+  res.send(info + "<br>" + date);
+});
+
+
+
 // GET phonebookin sisältö kokonaan
 app.get("/api/persons", (req, res) => {
-  // res.json(phonebook);
   Contact.find({}).then(contacts => {
     res.json(contacts)
   })
+  .catch(error => next(error))
 });
 
 // GET tietty kontakti phonebookista
-app.get("/api/persons/:id", (req, res) => {
-  // console.log("req params", req.params);
+app.get("/api/persons/:id", (req, res, next) => {
   const id = req.params.id;
-  let person = phonebook.find((person) => person.id === id);
-  // console.log("id", id);
-  // console.log("person", person);
-
-  if (person) {
-    res.json(person);
-  } else {
-    res.status(404).end();
-  }
+  Contact.findById(id)
+  .then(contact => {
+    if (contact) {
+      res.json(contact)
+    } else {
+      res.status(404).end()
+    }
+  })
+  .catch(error => next(error))
 });
 
 
@@ -95,34 +103,14 @@ app.get("/api/persons/:id", (req, res) => {
 
 
 // DELETE kontakti
-app.delete("/api/persons/:id", (req, res) => {
+app.delete("/api/persons/:id", (req, res, next) => {
   const id = req.params.id;
-  // console.log("id from backend: ", id);
-  // Filtteröidaan phonebook uudelleen siten, että pyynnön parametrin id omaava henkilö ei ole enää luettelossa
-  let updatedPhonebook = phonebook.filter((person) => {
-    // console.log(person);
-    return person.id !== id;
+  Contact.findByIdAndDelete(id)
+  .then(()=> {
+    res.status(204).end()
+  })
+  .catch(error => next(error))
   });
-  // Jos updatedPhonebook ja phonebook ovat samaan pituisia, vastataan 404 koodilla, että henkilöä ei löytynyt
-  if (updatedPhonebook.length == phonebook.length) {
-    res.status(404).json({
-      error: "Henkilöä ei löytynyt",
-    });
-  // Muussa tapauksessa lähetään onnistumisesta kertova statuskoodi ja päätetään pyyntö
-  } else {
-    // console.log("backend, else happened");
-    res.status(200).end();
-  }
-  // Päivitetään luettelo vastaamaan henkilön poiston mukaista luetteloa
-  phonebook = updatedPhonebook;
-  console.log("After deleting a person, this is from the backend", phonebook);
-
-});
-
-
-
-
-
 
 
 
@@ -132,11 +120,7 @@ app.delete("/api/persons/:id", (req, res) => {
 // POST uusi kontakti
 app.post("/api/persons", (req, res) => {
   let reqBody = req.body;
-
-
-  // Jos nimi ja puh. nro laitetaan tiedot newPerson olioon ja olion tiedot konkatenoidaan phonebookiiin uudeksi alkioksi.
   if (reqBody.name && reqBody.number) {
-
     const newContact = new Contact({
       name: reqBody.name,
       number: reqBody.number
@@ -150,27 +134,36 @@ app.post("/api/persons", (req, res) => {
       //   res.json(returnedContacts)
       // })
     })
-    .catch((error) => {
-      console.log("Virhe tapahtui tyyppiä lisätessä: ", error);
-    })
+    .catch(error => next(error))
 
   } else {
     res.status(400).json({
-      error: "ei sisältöä!",
+      error: "Pitää ilmoittaa sekä lisättävän kontaktin nimi, että numero.",
     });
   }
 });
 
 
 
+// PUT päivitä kontaktin tiedot
+app.put("/api/persons/:id", (req, res, next) => {
+  const id = req.params.id
+  const body = req.body
+
+  const updated = {
+    name: body.name,
+    number: body.number
+  }
+
+  Contact.findByIdAndUpdate(id, updated, {new: true})
+  .then(updatedContact => {
+    res.json(updatedContact)
+  })
+  .catch(error => next(error))
+})
 
 
 
-app.get("/info", (req, res) => {
-  let info = `Phonebook has info for ${phonebook.length} people`;
-  let date = new Date().toString();
-  res.send(info + "<br>" + date);
-});
 
 
 // Middleware pyynnöille, joilla on tuntematon osoite ja reitin toimintoja ei määritelty
@@ -181,6 +174,21 @@ const unknownEndpoint = (request, response) => {
   });
 };
 app.use(unknownEndpoint);
+
+// Virheiden käsittely middleware
+const errorHandler = (error, request, response, next) => {
+  console.error(error.message);
+
+  if (error.name === "CastError") {
+    return response
+      .status(400)
+      .send({ error: "Väärä ID virheidenkäsittelijässä 🛑" });
+  }
+  next(err);
+};
+app.use(errorHandler);
+
+
 
 // Käynnistetään palvelin.
 const PORT = process.env.PORT
