@@ -37,17 +37,19 @@ app.get('/', (req, res) => {
   res.send('Olet juuressa')
 })
 
-app.get('/info', (req, res) => {
-  Contact.find({}).then((result) => {
+app.get("/info", (req, res) => {
+  Contact.find({})
+    .then((result) => {
       let info = `Phonebook has info for ${result.length} people`;
       let date = new Date().toString();
       res.send(info + "<br>" + date);
-  })
-})
+    })
+    .catch((error) => next(error));
+});
 
 
 
-// GET phonebookin sisältö kokonaan
+// GET sisältö kokonaan
 app.get('/api/persons', (req, res, next) => {
   Contact.find({}).then(contacts => {
     res.json(contacts)
@@ -55,7 +57,7 @@ app.get('/api/persons', (req, res, next) => {
     .catch(error => next(error))
 })
 
-// GET tietty kontakti phonebookista
+// GET tietty kontakti
 app.get('/api/persons/:id', (req, res, next) => {
   const id = req.params.id
   Contact.findById(id)
