@@ -1,7 +1,15 @@
+// Otetaan ulkoiset kirjastot ja funktiot käyttöön
 const express = require("express");
 const app = express();
 const morgan = require("morgan");
 const cors = require("cors")
+require("dotenv").config()
+// Importit
+const Contact = require("./models/contact")
+
+
+
+
 
 // MIDDLEWARET
 app.use(cors())
@@ -18,10 +26,6 @@ morgan.token("postRequestContent", (req, res) => {
     return JSON.stringify(thing);
   }
 });
-
-
-
-
 
 
 
@@ -58,9 +62,6 @@ let phonebook = [
 
 
 
-
-
-
 // REITIT PYYNNÖILLE
 app.get("/", (req, res) => {
   res.send("Olet juuressa");
@@ -68,7 +69,10 @@ app.get("/", (req, res) => {
 
 // GET phonebookin sisältö kokonaan
 app.get("/api/persons", (req, res) => {
-  res.json(phonebook);
+  // res.json(phonebook);
+  Contact.find({}).then(contacts => {
+    res.json(contacts)
+  })
 });
 
 // GET tietty kontakti phonebookista
@@ -85,10 +89,6 @@ app.get("/api/persons/:id", (req, res) => {
     res.status(404).end();
   }
 });
-
-
-
-
 
 
 
@@ -131,32 +131,29 @@ app.delete("/api/persons/:id", (req, res) => {
 
 // POST uusi kontakti
 app.post("/api/persons", (req, res) => {
-  let newId = Math.floor(Math.random() * 9999999).toString()
   let reqBody = req.body;
-  // console.log("reqBody: ", reqBody);
 
-  // Tätä ei taideta tarvita, koska phonebook hoitaa nämä PUT pyynnöllä?
-  let isPersonAlreadyThere = phonebook.find((person) => person.name === reqBody.name)
-    ? true
-    : false;
-
-  if (isPersonAlreadyThere) {
-    return res.status(400).json({
-      error: "nimi pitää olla uniikki!",
-    });
-  }
 
   // Jos nimi ja puh. nro laitetaan tiedot newPerson olioon ja olion tiedot konkatenoidaan phonebookiiin uudeksi alkioksi.
   if (reqBody.name && reqBody.number) {
-    let newPerson = {
-      id: newId,
+
+    const newContact = new Contact({
       name: reqBody.name,
-      number: reqBody.number,
-    };
-    // console.log(newPerson);
-    phonebook = phonebook.concat(newPerson);
-    // console.log("After adding a new person, this is from the backend", phonebook);
-    res.json(phonebook);
+      number: reqBody.number
+    })
+    newContact.save().then(addedContact =>{
+      res.json(addedContact)
+
+      // Pidempi tapa jossa palautetaan koko puhelinluettelo
+      // Contact.find({}).then(returnedContacts => {
+      //   console.log("returnedContacts: ", returnedContacts);
+      //   res.json(returnedContacts)
+      // })
+    })
+    .catch((error) => {
+      console.log("Virhe tapahtui tyyppiä lisätessä: ", error);
+    })
+
   } else {
     res.status(400).json({
       error: "ei sisältöä!",
@@ -185,10 +182,10 @@ const unknownEndpoint = (request, response) => {
 };
 app.use(unknownEndpoint);
 
-// Käynnistetään palvelin. ENV-muuttuja on Renderiä varten, jotta se voi avata haluamsa portin. Jos Renderin valitsema portti ei ole käytössä, käytetään porttia 3001
-const PORT = process.env.PORT || 3001;
+// Käynnistetään palvelin.
+const PORT = process.env.PORT
 app.listen(PORT);
-// console.log(`servu käynnis portis ${PORT}`);
+console.log(`Servu käynnis portis ${PORT} 🚢`);
 
 
 

@@ -9,7 +9,6 @@
     "dev": "nodemon index.js",
     "build:ui": "rm -rf dist && cd ../hy-fs-open/osa2/puhelinluettelo && npm run build && cp -r dist ../../../osa3uusiyritys",
     "deploy:full": "npm run build:ui && git add . && git commit -m uibuild && git push",
-
     "testi": "cd ../hy-fs-open/osa2/puhelinluettelo && touch thing.txt && cp thing.txt ../../../osa3uusiyritys"
   },
   "author": "",
@@ -19,7 +18,9 @@
   },
   "dependencies": {
     "cors": "^2.8.5",
+    "dotenv": "^16.4.5",
     "express": "^4.19.2",
+    "mongoose": "^8.5.3",
     "morgan": "^1.10.0"
   }
 }
